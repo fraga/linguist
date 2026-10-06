@@ -74,6 +74,14 @@ class TestLanguage < Minitest::Test
     assert_nil Language.find_by_alias(nil)
   end
 
+  def test_xpp_markdown_alias
+    xpp = Language['X++']
+    refute_nil xpp
+    assert_equal xpp, Language.find_by_alias('xpp')
+    assert_equal xpp, Language.find_by_alias('x++')
+    assert_equal 'source.xpp', xpp.tm_scope
+  end
+
   # Note these are set by `script/update-ids`. If these tests fail then someone
   # has changed the `language_id` fields set in languages.yml which is almost certainly
   # not what you want to happen (these fields are used in GitHub's search indexes)

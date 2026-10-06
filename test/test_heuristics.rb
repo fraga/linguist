@@ -1392,6 +1392,42 @@ class TestHeuristics < Minitest::Test
     })
   end
 
+  def test_xml_by_heuristics
+    assert_heuristics({
+      'X++' => all_fixtures('X++', '*.xml'),
+      'XML' => all_fixtures('XML', '*.xml')
+    })
+  end
+
+  def test_xpp_xml_root
+    candidates = [Language['X++'], Language['XML']]
+    bodies = [
+      '<AxClass><SourceCode /></AxClass>',
+      "<?xml version=\"1.0\"?>\r\n<AxClass xmlns:i=\"http://www.w3.org/2001/XMLSchema-instance\">\r\n</AxClass>",
+      "<!-- Class metadata -->\n<AxClass><SourceCode /></AxClass>",
+      "<?xml version=\"1.0\"?>\n<!-- Copyright - preserved -->\n<!--\n Class metadata\n-->\n<AxClass><SourceCode /></AxClass>"
+    ]
+    bodies.each do |body|
+      assert_equal [Language['X++']], Heuristics.call(Blob.new('example.xml', body), candidates)
+      assert_equal [Language['X++']], Heuristics.call(Blob.new('example.xml', "\xEF\xBB\xBF".b + body.b), candidates)
+    end
+  end
+
+  def test_other_xml_roots
+    candidates = [Language['X++'], Language['XML']]
+    [
+      '<Document><AxClass /></Document>',
+      '<AxClassExtension><Name>Example</Name></AxClassExtension>',
+      '<AxClassroom />',
+      '<?xml version="1.0"?><AxTable><Name>Example</Name></AxTable>',
+      '<!-- <AxClass> is mentioned in a comment --><Document />',
+      '<!-- unfinished comment <AxClass><SourceCode /></AxClass>',
+      '<!-- Class metadata --><Document><AxClass /></Document>'
+    ].each do |body|
+      assert_equal [Language['XML']], Heuristics.call(Blob.new('example.xml', body), candidates)
+    end
+  end
+
   def test_yaml_by_heuristics
     assert_heuristics({
       "MiniYAML" => all_fixtures("MiniYAML", "*.yaml"),

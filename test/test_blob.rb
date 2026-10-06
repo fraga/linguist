@@ -329,6 +329,12 @@ class TestBlob < Minitest::Test
     end
   end
 
+  def test_xpp_class_metadata
+    assert_equal Language['X++'], sample_blob_memory('X++/DEVSysTimer.xml').language
+    assert_equal Language['X++'], sample_blob_memory('X++/DEVFileReaderCSV.xml').language
+    assert_equal Language['XML'], Blob.new('example.xml', '<Document><AxClass /></Document>').language
+  end
+
   def test_minified_files_not_safe_to_highlight
     assert !sample_blob_memory("JavaScript/jquery-1.6.1.min.js").safe_to_colorize?
   end

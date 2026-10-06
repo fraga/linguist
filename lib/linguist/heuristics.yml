@@ -1144,6 +1144,13 @@ disambiguations:
     pattern: '^%(end|ctor|hook|group)\b'
   - language: Linker Script
     pattern: 'OUTPUT_ARCH\(|OUTPUT_FORMAT\(|SECTIONS'
+- extensions: ['.xml']
+  rules:
+  - language: X++
+    # Dynamics 365 stores X++ classes in AxClass XML documents.
+    # The bounded prefix accommodates a UTF-8 BOM.
+    pattern: '\A\W{0,3}[ \t\r\n]*(?:<\?xml[^?]*\?>[ \t\r\n]*)?(?:<!--(?:[^-]|-[^-])*-->[ \t\r\n]*)*<AxClass[ \t\r\n>]'
+  - language: XML
 - extensions: ['.yaml', '.yml']
   rules:
   - language: MiniYAML
