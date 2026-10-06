@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main
+      - ci/xpp-highlighting-validation
   pull_request:
     branches:
       - main
